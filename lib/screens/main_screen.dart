@@ -1,7 +1,6 @@
 import 'package:einkaufsliste/model/Database.dart';
 import 'package:einkaufsliste/model/eintrag.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class MainScreen extends StatefulWidget {
   String listenName;
@@ -14,6 +13,18 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _textController = TextEditingController();
+
+  List<Auswahl> settingStrings = [
+    Auswahl("Listen verwalten", () {
+      print("listen verwalten");
+    }),
+    Auswahl("Freunden empfehlen", () {
+      print("freunden empfehlen");
+    }),
+    Auswahl("Einstellungen", () {
+      print("einstellungen");
+    }),
+  ];
 
   // data for testing
   List<Eintrag> testClients = [
@@ -73,9 +84,16 @@ class _MainScreenState extends State<MainScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Icon(Icons.share),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.more_vert),
+          PopupMenuButton<Auswahl>(
+            onSelected: (a) {
+              a.callback();
+            },
+            itemBuilder: (BuildContext context) {
+              return settingStrings.map((Auswahl choice) {
+                return PopupMenuItem<Auswahl>(
+                    value: choice, child: Text(choice.title));
+              }).toList();
+            },
           )
         ],
       ),
@@ -87,7 +105,8 @@ class _MainScreenState extends State<MainScreen> {
               child: Scrollbar(
                 child: FutureBuilder<List<Eintrag>>(
                   //future: DBProvider.db.getAllEintrag(),
-                  future: DBProvider.db.getAlleEintraegeListe(widget.listenName),
+                  future:
+                      DBProvider.db.getAlleEintraegeListe(widget.listenName),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Eintrag>> snapshot) {
                     if (snapshot.hasData) {
@@ -227,4 +246,11 @@ class _MainScreenState extends State<MainScreen> {
       },
     );
   }
+}
+
+class Auswahl {
+  String title;
+  VoidCallback callback;
+
+  Auswahl(this.title, this.callback);
 }
