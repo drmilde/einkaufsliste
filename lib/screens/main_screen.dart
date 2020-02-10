@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class MainScreen extends StatefulWidget {
-  String listeName;
+  String listenName;
 
-  MainScreen(this.listeName);
+  MainScreen(this.listenName);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -63,7 +63,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.listeName),
+        title: Text(widget.listenName),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -87,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
               child: Scrollbar(
                 child: FutureBuilder<List<Eintrag>>(
                   //future: DBProvider.db.getAllEintrag(),
-                  future: DBProvider.db.getAlleEintraegeListe(widget.listeName),
+                  future: DBProvider.db.getAlleEintraegeListe(widget.listenName),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Eintrag>> snapshot) {
                     if (snapshot.hasData) {
@@ -197,11 +197,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _submitText() async {
-    String text = _textController.text;
+    String text = _textController.text.trim();
 
     if (text.length > 0) {
       Eintrag e = Eintrag(
-          listenName: widget.listeName, produktName: text, selected: false);
+          listenName: widget.listenName, produktName: text, selected: false);
       //Eintrag rnd = testClients[math.Random().nextInt(testClients.length)];
 
       await DBProvider.db.newEintrag(e);
