@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class MainScreen extends StatefulWidget {
+  String listeName;
+
+  MainScreen(this.listeName);
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -11,11 +15,26 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   // data for testing
   List<Eintrag> testClients = [
-    Eintrag(listenName: "Meine Liste", produktName: "Brot", selected: false),
-    Eintrag(listenName: "Meine Liste", produktName: "Eier", selected: false),
-    Eintrag(listenName: "Meine Liste", produktName: "Milch", selected: false),
-    Eintrag(listenName: "Meine Liste", produktName: "Salat", selected: false),
-    Eintrag(listenName: "Meine Liste", produktName: "Flirt", selected: false),
+    Eintrag(
+        listenName: "Meine Einkaufsliste",
+        produktName: "Brot",
+        selected: false),
+    Eintrag(
+        listenName: "Meine Einkaufsliste",
+        produktName: "Eier",
+        selected: false),
+    Eintrag(
+        listenName: "Meine Einkaufsliste",
+        produktName: "Milch",
+        selected: false),
+    Eintrag(
+        listenName: "Meine Einkaufsliste",
+        produktName: "Salat",
+        selected: false),
+    Eintrag(
+        listenName: "Meine Einkaufsliste",
+        produktName: "Flirt",
+        selected: false),
     Eintrag(
         listenName: "Meine Liste", produktName: "Schokolade", selected: false),
     Eintrag(
@@ -28,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Meine Einkaufsliste"),
+        title: Text(widget.listeName),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -45,8 +64,8 @@ class _MainScreenState extends State<MainScreen> {
               flex: 1,
               child: FutureBuilder<List<Eintrag>>(
                 future: DBProvider.db.getAllEintrag(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<List<Eintrag>> snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Eintrag>> snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
                       itemCount: snapshot.data.length,
@@ -85,6 +104,59 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: Drawer(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: ListView(
+                children: <Widget>[
+                  DrawerHeader(
+                    child: Text(
+                      'Einkaufslisten',
+                      style: Theme.of(context).textTheme.title,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/tomaten.png"),
+                          fit: BoxFit.cover),
+                    ),
+                  ),
+                  buildListTile(context, "Meine Einkaufsliste"),
+                  Divider(
+                    thickness: 2,
+                  ),
+                  buildListTile(context, "iot/ESP32"),
+                  Divider(
+                    thickness: 2,
+                  ),
+                  buildListTile(context, "Karneval"),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ListTile buildListTile(BuildContext context, String listenName) {
+    return ListTile(
+      title: Text(listenName),
+      trailing: Icon(Icons.arrow_forward),
+      onTap: () {
+        //Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(listenName),
+          ),
+        );
+        //Navigator.of(context).pop();
+      },
     );
   }
 }
