@@ -36,11 +36,21 @@ class _MainScreenState extends State<MainScreen> {
         produktName: "Flirt",
         selected: false),
     Eintrag(
-        listenName: "Meine Liste", produktName: "Schokolade", selected: false),
+        listenName: "Meine Einkaufsliste",
+        produktName: "Schokolade",
+        selected: false),
     Eintrag(
-        listenName: "Meine Liste",
+        listenName: "Meine Einkaufsliste",
         produktName: "Veggie Würstchen",
         selected: false),
+    // Karneval
+    Eintrag(listenName: "Karneval", produktName: "Pappnase", selected: false),
+    Eintrag(listenName: "Karneval", produktName: "Roter Hut", selected: false),
+    Eintrag(listenName: "Karneval", produktName: "Spockohren", selected: false),
+    // IoT
+    Eintrag(listenName: "iot/ESP32", produktName: "esp32 Wroom", selected: false),
+    Eintrag(listenName: "iot/ESP32", produktName: "i2s chip", selected: false),
+    Eintrag(listenName: "iot/ESP32", produktName: "esp32 camera module", selected: false),
   ];
 
   @override
@@ -63,7 +73,8 @@ class _MainScreenState extends State<MainScreen> {
             Flexible(
               flex: 1,
               child: FutureBuilder<List<Eintrag>>(
-                future: DBProvider.db.getAllEintrag(),
+                //future: DBProvider.db.getAllEintrag(),
+                future: DBProvider.db.getAlleEintraegeListe(widget.listeName),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Eintrag>> snapshot) {
                   if (snapshot.hasData) {
