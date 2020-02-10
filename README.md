@@ -1,16 +1,16 @@
 # einkaufsliste
 
-A new Flutter application.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Einleitung
 
-A few resources to get you started if this is your first Flutter project:
+Eine einfache Anwendung zur Verwaltung von Einkauslisten.
+Werbefrei, einfach nur so zum Benutzen.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Features, die umgesetz werden sollen
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Verwaltung mehrerer Listen
+- Einfaches Hinzufügen von Produkten
+- Markierung eines Produktes
+- Löschen der Produkte durch Swipen
+- Manuelles Sortieren der Listen (optional) 
