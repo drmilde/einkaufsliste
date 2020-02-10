@@ -87,8 +87,6 @@ class DBProvider {
   Future<List<Eintrag>> getAlleEintraegeListe(String listenName) async {
     final db = await database;
 
-    print (listenName);
-
     // var res = await db.rawQuery("SELECT * FROM Client WHERE blocked=1");
     var res = await db.query("Eintrag", where: "listen_name = ? ", whereArgs: [listenName]);
 
