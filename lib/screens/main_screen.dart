@@ -217,7 +217,7 @@ class _MainScreenState extends State<MainScreen> {
       trailing: Icon(Icons.arrow_forward),
       onTap: () {
         //Navigator.of(context).pop();
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => MainScreen(listenName),
