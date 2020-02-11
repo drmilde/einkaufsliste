@@ -89,8 +89,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Scrollbar(
               child: FutureBuilder<List<Eintrag>>(
                 //future: DBProvider.db.getAllEintrag(),
-                future:
-                    DBProvider.db.getAlleEintraegeListe(widget.listenName),
+                future: DBProvider.db.getAlleEintraegeListe(widget.listenName),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Eintrag>> snapshot) {
                   if (snapshot.hasData) {
@@ -105,8 +104,14 @@ class _MainScreenState extends State<MainScreen> {
                             DBProvider.db.deleteEintrag(item.id);
                           },
                           child: ListTile(
-                            title: Text(item.produktName),
-                            trailing: Text(item.id.toString()),
+                            title: Text(
+                              item.produktName,
+                              style: Theme.of(context).textTheme.title,
+                            ),
+                            trailing: Text(
+                              item.id.toString(),
+                              style: Theme.of(context).textTheme.body2,
+                            ),
                             leading: Checkbox(
                               onChanged: (bool value) {
                                 DBProvider.db.selectOrUnselect(item);
@@ -238,6 +243,7 @@ class _MainScreenState extends State<MainScreen> {
                     children: <Widget>[
                       Text(
                         "Neue Liste erstellen",
+                        style: Theme.of(context).textTheme.title,
                       ),
                       Icon(Icons.add),
                     ],
@@ -283,7 +289,6 @@ class _MainScreenState extends State<MainScreen> {
       _textListeController.clear();
     });
   }
-
 
   ListTile buildListTile(BuildContext context, String listenName) {
     return ListTile(
