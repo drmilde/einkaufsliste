@@ -321,7 +321,7 @@ class _MainScreenState extends State<MainScreen> {
                   );
                 },
                 title: Text(
-                  "${item.listenName} ${index}",
+                  "${item.listenName} ${item.id}",
                   style: Theme.of(context).textTheme.title,
                 ),
               );
