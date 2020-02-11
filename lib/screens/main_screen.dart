@@ -74,110 +74,118 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.listenName),
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.delete),
+      appBar: buildAppBar(),
+      body: buildBody(context),
+      drawer: buildCustomDrawer(context),
+    );
+  }
+
+  Container buildBody(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Flexible(
+            flex: 1,
+            child: Scrollbar(
+              child: FutureBuilder<List<Eintrag>>(
+                //future: DBProvider.db.getAllEintrag(),
+                future:
+                    DBProvider.db.getAlleEintraegeListe(widget.listenName),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Eintrag>> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Eintrag item = snapshot.data[index];
+                        return Dismissible(
+                          key: UniqueKey(),
+                          background: Container(color: Colors.red),
+                          onDismissed: (direction) {
+                            DBProvider.db.deleteEintrag(item.id);
+                          },
+                          child: ListTile(
+                            title: Text(item.produktName),
+                            trailing: Text(item.id.toString()),
+                            leading: Checkbox(
+                              onChanged: (bool value) {
+                                DBProvider.db.selectOrUnselect(item);
+                                setState(() {});
+                              },
+                              value: item.selected,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.share),
+            child: Container(
+              height: 50,
+              margin: EdgeInsets.symmetric(horizontal: 4.0),
+              decoration: BoxDecoration(color: Theme.of(context).cardColor),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Flexible(
+                    child: TextField(
+                      keyboardType: TextInputType.text,
+                      // Setting maxLines=null makes the text field auto-expand when one
+                      // line is filled up.
+                      maxLines: 1,
+                      maxLength: 100,
+                      decoration:
+                          InputDecoration.collapsed(hintText: "Füge hinzu"),
+                      controller: _textProduktController,
+                      onSubmitted: (String text) {
+                        _submitText();
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: _submitText,
+                  ),
+                ],
+              ),
+            ),
           ),
-          PopupMenuButton<Auswahl>(
-            onSelected: (a) {
-              a.callback();
-            },
-            itemBuilder: (BuildContext context) {
-              return settingStrings.map((Auswahl choice) {
-                return PopupMenuItem<Auswahl>(
-                    value: choice, child: Text(choice.title));
-              }).toList();
-            },
-          )
         ],
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Flexible(
-              flex: 1,
-              child: Scrollbar(
-                child: FutureBuilder<List<Eintrag>>(
-                  //future: DBProvider.db.getAllEintrag(),
-                  future:
-                      DBProvider.db.getAlleEintraegeListe(widget.listenName),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Eintrag>> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Eintrag item = snapshot.data[index];
-                          return Dismissible(
-                            key: UniqueKey(),
-                            background: Container(color: Colors.red),
-                            onDismissed: (direction) {
-                              DBProvider.db.deleteEintrag(item.id);
-                            },
-                            child: ListTile(
-                              title: Text(item.produktName),
-                              trailing: Text(item.id.toString()),
-                              leading: Checkbox(
-                                onChanged: (bool value) {
-                                  DBProvider.db.selectOrUnselect(item);
-                                  setState(() {});
-                                },
-                                value: item.selected,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 50,
-                margin: EdgeInsets.symmetric(horizontal: 4.0),
-                decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Flexible(
-                      child: TextField(
-                        keyboardType: TextInputType.text,
-                        // Setting maxLines=null makes the text field auto-expand when one
-                        // line is filled up.
-                        maxLines: 1,
-                        maxLength: 100,
-                        decoration:
-                            InputDecoration.collapsed(hintText: "Füge hinzu"),
-                        controller: _textProduktController,
-                        onSubmitted: (String text) {
-                          _submitText();
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: _submitText,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: Text(widget.listenName),
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(Icons.delete),
         ),
-      ),
-      drawer: buildCustomDrawer(context),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(Icons.share),
+        ),
+        PopupMenuButton<Auswahl>(
+          onSelected: (a) {
+            a.callback();
+          },
+          itemBuilder: (BuildContext context) {
+            return settingStrings.map((Auswahl choice) {
+              return PopupMenuItem<Auswahl>(
+                  value: choice, child: Text(choice.title));
+            }).toList();
+          },
+        )
+      ],
     );
   }
 
