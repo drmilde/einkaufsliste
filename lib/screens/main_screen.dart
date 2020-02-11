@@ -13,6 +13,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _textProduktController = TextEditingController();
+  var _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   List<Auswahl> settingStrings = [
     Auswahl("Listen verwalten", () {
@@ -69,8 +70,6 @@ class _MainScreenState extends State<MainScreen> {
         produktName: "esp32 camera module",
         selected: false),
   ];
-
-  var _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +223,9 @@ class _MainScreenState extends State<MainScreen> {
               Flexible(
                 flex: 1,
                 //child: _buildStaticDrawer(context),
-                child: buildAllListenBuilder(context),
+                child: Scrollbar(
+                  child: buildAllListenBuilder(context),
+                ),
               ),
               _erstelleNeueListeBox(context)
             ],
