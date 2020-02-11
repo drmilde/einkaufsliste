@@ -1,5 +1,6 @@
 import 'package:einkaufsliste/model/Database.dart';
 import 'package:einkaufsliste/model/eintrag.dart';
+import 'package:einkaufsliste/model/listen_record.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -70,6 +71,13 @@ class _MainScreenState extends State<MainScreen> {
         produktName: "esp32 camera module",
         selected: false),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +284,7 @@ class _MainScreenState extends State<MainScreen> {
         decoration: BoxDecoration(color: Theme.of(context).cardColor),
         child: GestureDetector(
           onTap: () {
-            _erstelleNeueListe("Milde");
+            _erstelleNeueListe("Meine Einkaufsliste");
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -294,18 +302,26 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  FutureBuilder<List<String>> buildAllListenBuilder(BuildContext context) {
-    return FutureBuilder<List<String>>(
+  FutureBuilder<List<ListenRecord>> buildAllListenBuilder(BuildContext context) {
+    return FutureBuilder<List<ListenRecord>>(
       future: DBProvider.db.getAllListen(),
-      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<ListenRecord>> snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
-              String item = snapshot.data[index];
+              ListenRecord item = snapshot.data[index];
               return ListTile(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MainScreen(item.listenName),
+                    ),
+                  );
+                },
                 title: Text(
-                  "${item} ${index}",
+                  "${item.listenName} ${index}",
                   style: Theme.of(context).textTheme.title,
                 ),
               );
@@ -343,7 +359,6 @@ class _MainScreenState extends State<MainScreen> {
       */
 
       await DBProvider.db.newListe(text);
-      await DBProvider.db.getAllListen();
     }
     setState(() {
       // TODO

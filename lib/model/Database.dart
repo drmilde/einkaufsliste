@@ -7,6 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
+import 'listen_record.dart';
+
 class DBProvider {
   DBProvider._();
 
@@ -120,14 +122,14 @@ class DBProvider {
     return list;
   }
 
-  Future<List<String>> getAllListen() async {
+  Future<List<ListenRecord>> getAllListen() async {
     final db = await database;
     //var res = await db.query("Listen");
 
-    var res = await db.query("Listen", columns: ["listen_name"]);
-    List<String> list =
-        res.isNotEmpty ? res.map((c) {
-          return c["listen_name"].toString();
+    var res = await db.query("Listen");
+    List<ListenRecord> list =
+        res.isNotEmpty ? res.map((lr) {
+          return ListenRecord.fromMap(lr);
         }).toList() : [];
     return list;
   }
@@ -137,8 +139,13 @@ class DBProvider {
     return db.delete("Eintrag", where: "id = ?", whereArgs: [id]);
   }
 
-  deleteAll() async {
+  deleteAllEintrag() async {
     final db = await database;
     db.rawDelete("Delete * from Eintrag");
+  }
+
+  Future<void> deleteAllListen() async {
+    final db = await database;
+    db.rawDelete("Delete * from Listen");
   }
 }
