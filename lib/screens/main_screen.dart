@@ -13,7 +13,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _textProduktController = TextEditingController();
-  final TextEditingController _textListeController = TextEditingController();
 
   List<Auswahl> settingStrings = [
     Auswahl("Listen verwalten", () {
@@ -71,12 +70,17 @@ class _MainScreenState extends State<MainScreen> {
         selected: false),
   ];
 
+  var _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: buildBody(context),
-      drawer: buildCustomDrawer(context),
+      body: Scaffold(
+        key: _scaffoldKey,
+        body: buildBody(context),
+        drawer: buildCustomDrawer(context),
+      ),
     );
   }
 
@@ -169,6 +173,12 @@ class _MainScreenState extends State<MainScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.menu),
+        onPressed: () {
+          _toggleDrawer();
+        },
+      ),
       title: Text(widget.listenName),
       actions: <Widget>[
         Padding(
@@ -194,7 +204,15 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  SafeArea buildCustomDrawer(BuildContext context) {
+  void _toggleDrawer() {
+    if (_scaffoldKey.currentState.isDrawerOpen) {
+      Navigator.of(context).pop();
+    } else {
+      _scaffoldKey.currentState.openDrawer();
+    }
+  }
+
+  Widget buildCustomDrawer(BuildContext context) {
     return SafeArea(
       child: Drawer(
         child: GestureDetector(
@@ -205,55 +223,97 @@ class _MainScreenState extends State<MainScreen> {
             children: <Widget>[
               Flexible(
                 flex: 1,
-                child: ListView(
-                  children: <Widget>[
-                    DrawerHeader(
-                      child: Text(
-                        'Einkaufslisten',
-                        style: Theme.of(context).textTheme.title,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        image: DecorationImage(
-                            image: AssetImage("assets/images/tomaten.png"),
-                            fit: BoxFit.cover),
-                      ),
-                    ),
-                    buildListTile(context, "Meine Einkaufsliste"),
-                    Divider(
-                      thickness: 2,
-                    ),
-                    buildListTile(context, "iot/ESP32"),
-                    Divider(
-                      thickness: 2,
-                    ),
-                    buildListTile(context, "Karneval"),
-                  ],
-                ),
+                //child: _buildStaticDrawer(context),
+                child: buildAllListenBuilder(context),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 50,
-                  margin: EdgeInsets.symmetric(horizontal: 4.0),
-                  decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "Neue Liste erstellen",
-                        style: Theme.of(context).textTheme.title,
-                      ),
-                      Icon(Icons.add),
-                    ],
-                  ),
-                ),
-              )
+              _erstelleNeueListeBox(context)
             ],
           ),
         ),
       ),
+    );
+  }
+
+  ListView _buildStaticDrawer(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        _customDrawerHeader(context),
+        //buildAllListenBuilder(),
+        buildListTile(context, "Meine Einkaufsliste"),
+        Divider(
+          thickness: 2,
+        ),
+        buildListTile(context, "iot/ESP32"),
+        Divider(
+          thickness: 2,
+        ),
+        buildListTile(context, "Karneval"),
+      ],
+    );
+  }
+
+  DrawerHeader _customDrawerHeader(BuildContext context) {
+    return DrawerHeader(
+      child: Text(
+        'Einkaufslisten',
+        style: Theme.of(context).textTheme.title,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        image: DecorationImage(
+            image: AssetImage("assets/images/tomaten.png"), fit: BoxFit.cover),
+      ),
+    );
+  }
+
+  Padding _erstelleNeueListeBox(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 50,
+        margin: EdgeInsets.symmetric(horizontal: 4.0),
+        decoration: BoxDecoration(color: Theme.of(context).cardColor),
+        child: GestureDetector(
+          onTap: () {
+            _erstelleNeueListe("Milde");
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Neue Liste erstellen",
+                style: Theme.of(context).textTheme.title,
+              ),
+              Icon(Icons.add),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  FutureBuilder<List<String>> buildAllListenBuilder(BuildContext context) {
+    return FutureBuilder<List<String>>(
+      future: DBProvider.db.getAllListen(),
+      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (BuildContext context, int index) {
+              String item = snapshot.data[index];
+              return ListTile(
+                title: Text(
+                  "${item} ${index}",
+                  style: Theme.of(context).textTheme.title,
+                ),
+              );
+            },
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 
@@ -272,21 +332,20 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  void _erstelleNeueListe() async {
-    String text = _textListeController.text.trim();
-
+  void _erstelleNeueListe(String text) async {
     if (text.length > 0) {
       // TODO Eintrag in Listennamen erzeugen
       /*
       Eintrag e = Eintrag(
           listenName: widget.listenName, produktName: text, selected: false);
       //Eintrag rnd = testClients[math.Random().nextInt(testClients.length)];
+      */
 
-      await DBProvider.db.newEintrag(e);
-       */
+      await DBProvider.db.newListe(text);
+      await DBProvider.db.getAllListen();
     }
     setState(() {
-      _textListeController.clear();
+      // TODO
     });
   }
 

@@ -32,6 +32,10 @@ class DBProvider {
           "produkt_name TEXT,"
           "selected BIT"
           ")");
+      await db.execute("CREATE TABLE Listen("
+          "id INTEGER PRIMARY KEY,"
+          "listen_name TEXT"
+          ")");
     });
   }
 
@@ -45,6 +49,19 @@ class DBProvider {
         "INSERT Into Eintrag (id,listen_name,produkt_name,selected)"
         " VALUES (?,?,?,?)",
         [id, newEintrag.listenName, newEintrag.produktName, newEintrag.selected]);
+    return raw;
+  }
+
+  newListe(String listenName) async {
+    final db = await database;
+    //get the biggest id in the table
+    var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM Listen");
+    int id = table.first["id"];
+    //insert to the table using the new id
+    var raw = await db.rawInsert(
+        "INSERT Into Listen (id,listen_name)"
+        " VALUES (?,?)",
+        [id, listenName]);
     return raw;
   }
 
@@ -100,6 +117,18 @@ class DBProvider {
     var res = await db.query("Eintrag");
     List<Eintrag> list =
         res.isNotEmpty ? res.map((c) => Eintrag.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  Future<List<String>> getAllListen() async {
+    final db = await database;
+    //var res = await db.query("Listen");
+
+    var res = await db.query("Listen", columns: ["listen_name"]);
+    List<String> list =
+        res.isNotEmpty ? res.map((c) {
+          return c["listen_name"].toString();
+        }).toList() : [];
     return list;
   }
 
