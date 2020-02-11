@@ -12,7 +12,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _textProduktController = TextEditingController();
+  final TextEditingController _textListeController = TextEditingController();
 
   List<Auswahl> settingStrings = [
     Auswahl("Listen verwalten", () {
@@ -159,7 +160,7 @@ class _MainScreenState extends State<MainScreen> {
                         maxLength: 100,
                         decoration:
                             InputDecoration.collapsed(hintText: "Füge hinzu"),
-                        controller: _textController,
+                        controller: _textProduktController,
                         onSubmitted: (String text) {
                           _submitText();
                         },
@@ -176,39 +177,66 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
-      drawer: Drawer(
-        child: SafeArea(
-          child: Drawer(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: ListView(
-                children: <Widget>[
-                  DrawerHeader(
-                    child: Text(
-                      'Einkaufslisten',
-                      style: Theme.of(context).textTheme.title,
+      drawer: buildCustomDrawer(context),
+    );
+  }
+
+  SafeArea buildCustomDrawer(BuildContext context) {
+    return SafeArea(
+      child: Drawer(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: Column(
+            children: <Widget>[
+              Flexible(
+                flex: 1,
+                child: ListView(
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Text(
+                        'Einkaufslisten',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        image: DecorationImage(
+                            image: AssetImage("assets/images/tomaten.png"),
+                            fit: BoxFit.cover),
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      image: DecorationImage(
-                          image: AssetImage("assets/images/tomaten.png"),
-                          fit: BoxFit.cover),
+                    buildListTile(context, "Meine Einkaufsliste"),
+                    Divider(
+                      thickness: 2,
                     ),
-                  ),
-                  buildListTile(context, "Meine Einkaufsliste"),
-                  Divider(
-                    thickness: 2,
-                  ),
-                  buildListTile(context, "iot/ESP32"),
-                  Divider(
-                    thickness: 2,
-                  ),
-                  buildListTile(context, "Karneval"),
-                ],
+                    buildListTile(context, "iot/ESP32"),
+                    Divider(
+                      thickness: 2,
+                    ),
+                    buildListTile(context, "Karneval"),
+                  ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 50,
+                  margin: EdgeInsets.symmetric(horizontal: 4.0),
+                  decoration: BoxDecoration(color: Theme.of(context).cardColor),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Neue Liste erstellen",
+                      ),
+                      Icon(Icons.add),
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -216,7 +244,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _submitText() async {
-    String text = _textController.text.trim();
+    String text = _textProduktController.text.trim();
 
     if (text.length > 0) {
       Eintrag e = Eintrag(
@@ -226,9 +254,28 @@ class _MainScreenState extends State<MainScreen> {
       await DBProvider.db.newEintrag(e);
     }
     setState(() {
-      _textController.clear();
+      _textProduktController.clear();
     });
   }
+
+  void _erstelleNeueListe() async {
+    String text = _textListeController.text.trim();
+
+    if (text.length > 0) {
+      // TODO Eintrag in Listennamen erzeugen
+      /*
+      Eintrag e = Eintrag(
+          listenName: widget.listenName, produktName: text, selected: false);
+      //Eintrag rnd = testClients[math.Random().nextInt(testClients.length)];
+
+      await DBProvider.db.newEintrag(e);
+       */
+    }
+    setState(() {
+      _textListeController.clear();
+    });
+  }
+
 
   ListTile buildListTile(BuildContext context, String listenName) {
     return ListTile(
