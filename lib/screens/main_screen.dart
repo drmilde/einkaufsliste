@@ -76,7 +76,6 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
   }
 
   @override
@@ -105,6 +104,7 @@ class _MainScreenState extends State<MainScreen> {
                     AsyncSnapshot<List<Eintrag>> snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
+                      key: UniqueKey(),
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
                         Eintrag item = snapshot.data[index];
@@ -117,11 +117,17 @@ class _MainScreenState extends State<MainScreen> {
                           child: ListTile(
                             title: Text(
                               item.produktName,
-                              style: Theme.of(context).textTheme.title,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .title,
                             ),
                             trailing: Text(
                               item.id.toString(),
-                              style: Theme.of(context).textTheme.body2,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .body2,
                             ),
                             leading: Checkbox(
                               onChanged: (bool value) {
@@ -146,7 +152,9 @@ class _MainScreenState extends State<MainScreen> {
             child: Container(
               height: 50,
               margin: EdgeInsets.symmetric(horizontal: 4.0),
-              decoration: BoxDecoration(color: Theme.of(context).cardColor),
+              decoration: BoxDecoration(color: Theme
+                  .of(context)
+                  .cardColor),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
@@ -158,7 +166,7 @@ class _MainScreenState extends State<MainScreen> {
                       maxLines: 1,
                       maxLength: 100,
                       decoration:
-                          InputDecoration.collapsed(hintText: "Füge hinzu"),
+                      InputDecoration.collapsed(hintText: "Füge hinzu"),
                       controller: _textProduktController,
                       onSubmitted: (String text) {
                         _submitText();
@@ -265,7 +273,10 @@ class _MainScreenState extends State<MainScreen> {
     return DrawerHeader(
       child: Text(
         'Einkaufslisten',
-        style: Theme.of(context).textTheme.title,
+        style: Theme
+            .of(context)
+            .textTheme
+            .title,
       ),
       decoration: BoxDecoration(
         color: Colors.blue,
@@ -281,10 +292,41 @@ class _MainScreenState extends State<MainScreen> {
       child: Container(
         height: 50,
         margin: EdgeInsets.symmetric(horizontal: 4.0),
-        decoration: BoxDecoration(color: Theme.of(context).cardColor),
+        decoration: BoxDecoration(color: Theme
+            .of(context)
+            .cardColor),
         child: GestureDetector(
           onTap: () {
-            _erstelleNeueListe("Meine Einkaufsliste");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    //title: Text("Neue Liste erstellen"),
+                    content: Column(
+                      children: <Widget>[
+                        TextField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Listenname',
+                          ),
+                        ),
+                        FlatButton(
+                          child: Text("ok"),
+                          onPressed: () {
+                            _erstelleNeueListe("Meine Einkaufsliste");
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        FlatButton(
+                          child: Text("Abbrechen"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                });
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -292,7 +334,10 @@ class _MainScreenState extends State<MainScreen> {
             children: <Widget>[
               Text(
                 "Neue Liste erstellen",
-                style: Theme.of(context).textTheme.title,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .title,
               ),
               Icon(Icons.add),
             ],
@@ -302,10 +347,12 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  FutureBuilder<List<ListenRecord>> buildAllListenBuilder(BuildContext context) {
+  FutureBuilder<List<ListenRecord>> buildAllListenBuilder(
+      BuildContext context) {
     return FutureBuilder<List<ListenRecord>>(
       future: DBProvider.db.getAllListen(),
-      builder: (BuildContext context, AsyncSnapshot<List<ListenRecord>> snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<List<ListenRecord>> snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
             itemCount: snapshot.data.length,
@@ -322,7 +369,10 @@ class _MainScreenState extends State<MainScreen> {
                 },
                 title: Text(
                   "${item.listenName} ${item.id}",
-                  style: Theme.of(context).textTheme.title,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .title,
                 ),
               );
             },
