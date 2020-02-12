@@ -1,3 +1,4 @@
+import 'package:einkaufsliste/screens/main_reordable_screen.dart';
 import 'package:einkaufsliste/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainScreen("Meine Einkaufsliste"),
+      //home: MainScreen("Meine Einkaufsliste"),
+      home: MainReordableScreen(),
     );
   }
 }
