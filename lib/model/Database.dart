@@ -32,7 +32,8 @@ class DBProvider {
           "id INTEGER PRIMARY KEY,"
           "listen_name TEXT,"
           "produkt_name TEXT,"
-          "selected BIT"
+          "selected BIT,"
+          "list_pos INTEGER"
           ")");
       await db.execute("CREATE TABLE Listen("
           "id INTEGER PRIMARY KEY,"
@@ -48,9 +49,15 @@ class DBProvider {
     int id = table.first["id"];
     //insert to the table using the new id
     var raw = await db.rawInsert(
-        "INSERT Into Eintrag (id,listen_name,produkt_name,selected)"
-        " VALUES (?,?,?,?)",
-        [id, newEintrag.listenName, newEintrag.produktName, newEintrag.selected]);
+        "INSERT Into Eintrag (id,listen_name,produkt_name,selected,list_pos)"
+        " VALUES (?,?,?,?,?)",
+        [
+          id,
+          newEintrag.listenName,
+          newEintrag.produktName,
+          newEintrag.selected,
+          newEintrag.listPos
+        ]);
     return raw;
   }
 
@@ -73,7 +80,8 @@ class DBProvider {
         id: eintrag.id,
         listenName: eintrag.listenName,
         produktName: eintrag.produktName,
-        selected: !eintrag.selected);
+        selected: !eintrag.selected,
+        listPos: eintrag.listPos);
     var res = await db.update("Eintrag", selected.toMap(),
         where: "id = ?", whereArgs: [eintrag.id]);
     return res;
@@ -107,7 +115,8 @@ class DBProvider {
     final db = await database;
 
     // var res = await db.rawQuery("SELECT * FROM Client WHERE blocked=1");
-    var res = await db.query("Eintrag", where: "listen_name = ? ", whereArgs: [listenName]);
+    var res = await db
+        .query("Eintrag", where: "listen_name = ? ", whereArgs: [listenName]);
 
     List<Eintrag> list =
         res.isNotEmpty ? res.map((c) => Eintrag.fromMap(c)).toList() : [];
@@ -127,10 +136,11 @@ class DBProvider {
     //var res = await db.query("Listen");
 
     var res = await db.query("Listen");
-    List<ListenRecord> list =
-        res.isNotEmpty ? res.map((lr) {
-          return ListenRecord.fromMap(lr);
-        }).toList() : [];
+    List<ListenRecord> list = res.isNotEmpty
+        ? res.map((lr) {
+            return ListenRecord.fromMap(lr);
+          }).toList()
+        : [];
     return list;
   }
 
@@ -144,7 +154,7 @@ class DBProvider {
     db.rawDelete("Delete * from Eintrag");
   }
 
-  Future<void> deleteAllListen() async {
+  deleteAllListen() async {
     final db = await database;
     db.rawDelete("Delete * from Listen");
   }

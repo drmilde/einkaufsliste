@@ -15,12 +15,14 @@ class Eintrag {
   String listenName;
   String produktName;
   bool selected;
+  int listPos;
 
   Eintrag({
     this.id,
     this.listenName,
     this.produktName,
     this.selected,
+    this.listPos,
   });
 
   factory Eintrag.fromMap(Map<String, dynamic> json) => new Eintrag(
@@ -28,6 +30,7 @@ class Eintrag {
     listenName: json["listen_name"],
     produktName: json["produkt_name"],
     selected: json["selected"] == 1,
+    listPos: json["list_pos"],
   );
 
   Map<String, dynamic> toMap() => {
@@ -35,5 +38,6 @@ class Eintrag {
     "listen_name": listenName,
     "produkt_name": produktName,
     "selected": selected,
+    "list_pos": listPos,
   };
 }
